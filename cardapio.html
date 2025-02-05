@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio Digital - Fast Food</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        .categoria {
+            margin-bottom: 20px;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .item-info {
+            flex-grow: 1;
+        }
+
+        .item-preco {
+            margin-left: 10px;
+        }
+
+        #carrinho {
+            margin-top: 20px;
+            border-top: 1 px solid white;
+            padding-top: 10px;
+        }
+
+        #total {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        #pagamento {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cardápio Digital</h1>
+
+    <div class="categoria">
+        <h2>Hambúrguers</h2>
+        <div class="item">
+            <input type="checkbox" id="hamburguer1">
+            <div class="item-info">
+                <label for="hamburguer1">X-Tudo</label>
+                <p>Pão, Carne, Tomate, Queijo, Alface, Ovo, Bacon e Maionese verde</p>
+            </div>
+            <span class="item-preco">R$ 20,00</span>
+        </div>
+        <div class="item">
+            <input type="checkbox" id="hamburguer2">
+            <div class="item-info">
+                <label for="hamburguer2">X-Salada</label>
+                <p>Pão, Carne, Queijo, Alface, Tomate e Maionese verde</p>
+            </div>
+            <span class="item-preco">R$ 15,00</span>
+        </div>
+        <div class="item">
+            <input type="checkbox" id="hamburguer3">
+            <div class="item-info">
+                <label for="hamburguer3">Nordestino</label>
+                <p>Pão, 2 Carne, 2 Queijo, Cheddar, Catupiry, Charque desfiada, Barbecue e Maionese verde </p>
+            </div>
+            <span class="item-preco">R$ 25,00</span>
+        </div>
+        <div class="item">
+            <input type="checkbox" id="hamburguer4">
+            <div class="item-info">
+                <label for="hamburguer4">Picanha Burguer</label>
+                <p>Pão, Carne, Queijo, Cheddar, Pedaços de Picanha, Barbecue e Anéis de Cebola</p>
+            </div>
+            <span class="item-preco">R$ 30,00</span>
+        </div>
+    </div>
+
+    <div class="categoria">
+        <h2>Bebidas</h2>
+        <div class="item">
+            <input type="checkbox" id="bebida1">
+            <div class="item-info">
+                <label for="bebida1">Refrigerantes</label>
+                <p>Coca-cola, Pepsi, Guaraná, Fanta</p>
+            </div>
+            <span class="item-preco">R$ 5,00</span>
+        </div>
+        <div class="item">
+            <input type="checkbox" id="bebida2">
+            <div class="item-info">
+                <label for="bebida2">Suco</label>
+                <p>Laranja, Abacaxi, Morango, Graviola</p>
+            </div>
+            <span class="item-preco">R$ 7,00</span>
+        </div>
+    </div>
+
+    <div id="carrinho">
+        <h2>Carrinho de Compras</h2>
+        <ul id="itens-carrinho">
+        </ul>
+        <div id="total">
+            Total: R$ 0,00
+        </div>
+    </div>
+
+    <div id="pagamento">
+        <h2>Pagamento</h2>
+        <p>Forma de Pagamento:</p>
+        <select id="forma-pagamento">
+            <option value="cartao">Cartão (Débito/Crédito)</option>
+            <option value="pix">Pix</option>
+            <option value="dinheiro">Dinheiro</option>
+        </select>
+        <p>Nome:</p>
+        <input type="text" id="nome">
+        <p>Endereço:</p>
+        <input type="text" id="endereço">
+        <button onclick="finalizarPedido()">Finalizar Pedido</button>
+    </div>
+
+    <script>
+        const itens = {
+            hamburguer1: { nome: "X-Tudo", preco: 20.00},
+            hamburguer2: { nome: "X-Salada", preco: 15.00 },
+            hamburguer3: { nome: "Nordestino", preco: 25.00},
+            hamburguer4: { nome: "Picanha Burguer", preco: 30.00},
+            bebida1: { nome: "Refrigerante", preco: 5.00},
+            bebida2: { nome: "Suco", preco: 7.00}
+        };
+
+        const carrinho = [];
+
+        function atualizarCarrinho() {
+            const itensCarrinho = document.getElementById("itens-carrinho");
+            itensCarrinho.innerHTML = "";
+            let total = 0;
+
+            carrinho.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = `${item.nome} x ${item.quantidade} - R$ ${item.preco * item.quantidade}`;
+                itensCarrinho.appendChild(li);
+                total += item.preco * item.quantidade;
+            });
+
+            document.getElementById("total").textContent = `Total: R${total.tofixed(2)}`;
+        }
+
+        function adicionarAoCarrinho(item) {
+            const itemExistente = carrinho.find(i => i.nome === item.nome);
+            if (itemExistente) {
+                itemExistente.quantidade++;
+            } else{
+                carrinho.push({ ...item, quantidade: 1});
+            }
+            atualizarCarrinho();
+        }
+
+        function finalizarPedido() {
+            const formaPagamento = document.getElementById("forma-pagamento").value;
+            const nome = document.getElementById("nome").value;
+            const endereco = document.getElementById("endereco").value;
+
+            if (carrinho.length === 0) {
+                alert("Seu carrinho está vazio. Adicione itens para finalizar o pedido.");
+                return;
+            }
+
+            if (nome === "" || endereco === "") {
+                alert("Por favor, preencha seu nome e endereço para entrega.");
+                return;
+            }
+
+            let resumoPedido = "Resumo do Pedido:\n";
+            carrinho.forEach(item => {
+                resumoPedido += `${item.nome} x ${item.quantidade} - R$ ${item.preco * item.quantidade}\n`; });
+            resumoPedido += `Total: R$ ${carrinho.reduce((total, item) => total + item.preco * item.quantidade, 0).toFixed(2)}\n`;
+            resumoPedido += `Forma de Pagamento: ${formaPagamento === "cartao" ? "Cartão" : "Pix"}\n`;
+            resumoPedido += `Nome: ${nome}\n`;
+            resumoPedido += `Endereço: ${endereço}\n`;
+            
+            const confirmar = confirm(resumoPedido);
+            if (confirmar) {
+                alert("Pedido realizado com sucesso!");
+                carrinho.length = 0;
+                atualizarCarrinho();
+            } else {
+                alert("Pedido cancelado.");
+            }
+        }
+
+        for (const key in itens) {
+            const checkbox = document.getElementById(key);
+            checkbox.addEventListener("click", () => {
+                if (checkbox.checked) {
+                    adicionarAoCarrinho(itens[Key]);
+                } else {
+                    //Remover item do carrinho
+                }
+            });
+        }
+    </script>
+</body>
+</html>
